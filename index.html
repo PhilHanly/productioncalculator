@@ -68,6 +68,7 @@
       justify-content: space-between;
       width: 100%;
       margin-bottom: 20px;
+      position: relative;
     }
 
     label {
@@ -117,6 +118,7 @@
     .tooltip-icon {
       margin-left: 8px;
       cursor: pointer;
+      position: relative;
     }
 
     .tooltip-icon img {
@@ -135,11 +137,11 @@
       padding: 5px;
       position: absolute;
       z-index: 9999;
-      top: -40px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 50%;
+      left: 100%;
+      transform: translate(0, -50%);
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: opacity 0.3s, visibility 0.3s;
     }
 
     .tooltip-icon:hover .tooltip-text {
