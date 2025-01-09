@@ -63,22 +63,21 @@
     }
 
     .form-group {
-      margin-bottom: 20px;
-      width: 100%;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      position: relative;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 20px;
     }
 
     label {
+      flex: 1;
       font-weight: bold;
-      margin-bottom: 5px;
       color: rgb(3, 20, 67);
     }
 
     input {
-      width: 80%;
+      flex: 2;
       padding: 10px;
       border: 2px solid rgb(166, 245, 29);
       border-radius: 4px;
@@ -116,19 +115,13 @@
     }
 
     .tooltip-icon {
-      width: 16px;
-      height: 16px;
       margin-left: 8px;
       cursor: pointer;
-      position: absolute;
-      top: 50%;
-      left: -20px;
-      transform: translateY(-50%);
     }
 
     .tooltip-icon img {
-      width: 100%;
-      height: auto;
+      width: 16px;
+      height: 16px;
     }
 
     .tooltip-text {
@@ -209,56 +202,56 @@
 
     <div class="form-group">
       <label for="ratio">Development Ratio (Minutes):</label>
+      <input type="number" id="ratio" placeholder="Enter development ratio (e.g., 145)" required>
       <div class="tooltip-icon">
         <img src="Tool-tip.png" alt="Tooltip Icon">
         <div class="tooltip-text">Enter the number of minutes required to develop one minute of content. Example: 145 minutes.</div>
       </div>
-      <input type="number" id="ratio" placeholder="Enter development ratio (e.g., 145)" required>
     </div>
 
     <div class="form-group">
       <label for="resources">Number of Resources:</label>
+      <input type="number" id="resources" placeholder="Enter number of resources" required>
       <div class="tooltip-icon">
         <img src="Tool-tip.png" alt="Tooltip Icon">
         <div class="tooltip-text">Enter the number of people working on the project.</div>
       </div>
-      <input type="number" id="resources" placeholder="Enter number of resources" required>
     </div>
 
     <div class="form-group">
       <label for="daily-hours">Hours Per Resource Per Day:</label>
+      <input type="number" id="daily-hours" placeholder="Enter daily hours per resource" required>
       <div class="tooltip-icon">
         <img src="Tool-tip.png" alt="Tooltip Icon">
         <div class="tooltip-text">Enter the productive hours each resource can work daily.</div>
       </div>
-      <input type="number" id="daily-hours" placeholder="Enter daily hours per resource" required>
     </div>
 
     <div class="form-group">
       <label for="words-per-minute">Words Per Minute (WPM):</label>
+      <input type="number" id="words-per-minute" placeholder="Enter narration speed (e.g., 130)" value="130" required>
       <div class="tooltip-icon">
         <img src="Tool-tip.png" alt="Tooltip Icon">
         <div class="tooltip-text">Enter the narration speed in words per minute. Default is 130 WPM.</div>
       </div>
-      <input type="number" id="words-per-minute" placeholder="Enter narration speed (e.g., 130)" value="130" required>
     </div>
 
     <div class="form-group">
       <label for="max-daily-hours">Maximum Daily Working Hours Per Resource:</label>
+      <input type="number" id="max-daily-hours" placeholder="Enter max daily hours (e.g., 6)" value="6" required>
       <div class="tooltip-icon">
         <img src="Tool-tip.png" alt="Tooltip Icon">
         <div class="tooltip-text">Enter the maximum daily working hours per resource. Default is 6 hours.</div>
       </div>
-      <input type="number" id="max-daily-hours" placeholder="Enter max daily hours (e.g., 6)" value="6" required>
     </div>
 
     <div class="form-group">
       <label for="start-date">Start Date:</label>
+      <input type="date" id="start-date" required>
       <div class="tooltip-icon">
         <img src="Tool-tip.png" alt="Tooltip Icon">
         <div class="tooltip-text">Select the project start date.</div>
       </div>
-      <input type="date" id="start-date" required>
     </div>
 
     <!-- Step 2: Word Counts -->
@@ -268,15 +261,15 @@
       <div class="form-group">
         <label for="module1">Module 1 Word Count:</label>
         <input type="number" id="module1" placeholder="Enter word count for Module 1">
+        <div class="tooltip-icon">
+          <img src="Tool-tip.png" alt="Tooltip Icon">
+          <div class="tooltip-text">Enter the total word count for this module.</div>
+        </div>
       </div>
     </div>
-    <button type="button" id="add-module">
-      Add Module
-      <div class="tooltip-icon">
-        <img src="Tool-tip.png" alt="Tooltip Icon">
-        <div class="tooltip-text">Click to add a new module input field.</div>
-      </div>
-    </button>
+    <div class="form-group">
+      <button type="button" id="add-module">Add Module</button>
+    </div>
     <button type="button" id="remove-module" disabled>Remove Module</button>
 
     <!-- Step 3: Calculate -->
@@ -308,6 +301,10 @@
       newModule.innerHTML = `
         <label for="module${moduleCount}">Module ${moduleCount} Word Count:</label>
         <input type="number" id="module${moduleCount}" placeholder="Enter word count for Module ${moduleCount}">
+        <div class="tooltip-icon">
+          <img src="Tool-tip.png" alt="Tooltip Icon">
+          <div class="tooltip-text">Enter the total word count for this module.</div>
+        </div>
       `;
       moduleInputs.appendChild(newModule);
       document.getElementById('remove-module').disabled = false;
