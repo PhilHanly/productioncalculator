@@ -269,12 +269,9 @@
         </div>
       </div>
     </div>
-    <div class="form-group">
-      <button type="button" id="add-module">Add Another Module</button>
-    </div>
+    <button type="button" id="add-module">Add Module</button>
     <button type="button" id="remove-module" disabled>Remove Module</button>
 
-    <!-- Step 3: Calculate -->
     <button type="button" id="calculate-btn">Calculate</button>
     <p class="loading" id="loading">Calculating... Please wait.</p>
 
@@ -284,6 +281,7 @@
       <p>Total Word Count: <span id="total-word-count">0</span></p>
       <p>Total Course Duration (Minutes): <span id="narration-time">0</span></p>
       <p>Total Development Time (Hours): <span id="development-time">0</span></p>
+      <p>Projected End Date: <span id="projected-end-date">N/A</span></p>
     </div>
 
     <!-- Gantt Chart -->
@@ -294,40 +292,7 @@
   </div>
 
   <script>
-    // Event listener for adding a new module input field
-    document.getElementById('add-module').addEventListener('click', function() {
-      const moduleInputs = document.getElementById('module-inputs');
-      const moduleCount = moduleInputs.children.length + 1;
-      const newModule = document.createElement('div');
-      newModule.classList.add('form-group');
-      newModule.innerHTML = `
-        <label for="module${moduleCount}">Module ${moduleCount} Word Count:</label>
-        <input type="number" id="module${moduleCount}" placeholder="Enter word count for Module ${moduleCount}">
-        <div class="tooltip-icon">
-          <img src="Tool-tip.png" alt="Tooltip Icon">
-          <div class="tooltip-text">Enter the total word count for this module.</div>
-        </div>
-      `;
-      moduleInputs.appendChild(newModule);
-      document.getElementById('remove-module').disabled = false;
-    });
-
-    // Event listener for removing the last module input field
-    document.getElementById('remove-module').addEventListener('click', function() {
-      const moduleInputs = document.getElementById('module-inputs');
-      if (moduleInputs.children.length > 1) {
-        moduleInputs.removeChild(moduleInputs.lastChild);
-      }
-      if (moduleInputs.children.length === 1) {
-        document.getElementById('remove-module').disabled = true;
-      }
-    });
-
-    let ganttChart;
-
     document.getElementById('calculate-btn').addEventListener('click', function () {
-      document.getElementById('loading').style.display = 'block';
-
       const ratio = parseFloat(document.getElementById('ratio').value) || 0;
       const resources = parseFloat(document.getElementById('resources').value) || 1;
       const dailyHours = parseFloat(document.getElementById('daily-hours').value) || 6;
@@ -337,11 +302,9 @@
 
       if (!startDate) {
         alert('Please select a start date.');
-        document.getElementById('loading').style.display = 'none';
         return;
       }
 
-      const startDateObj = new Date(startDate);
       const moduleInputs = document.getElementById('module-inputs');
       let totalWordCount = 0;
       moduleInputs.querySelectorAll('input').forEach(input => {
@@ -352,15 +315,14 @@
       const developmentTime = (courseDuration * ratio) / 60;
 
       const maxDailyCapacity = resources * maxDailyHours;
-      const projectedDailyHours = resources * dailyHours;
       const timeline = [];
-      let currentDate = new Date(startDateObj);
+      let currentDate = new Date(startDate);
       let hoursRemaining = developmentTime;
 
       while (hoursRemaining > 0) {
         const dayOfWeek = currentDate.getDay();
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          const hoursWorked = Math.min(projectedDailyHours, hoursRemaining);
+          const hoursWorked = Math.min(resources * dailyHours, hoursRemaining);
           timeline.push({
             date: currentDate.toISOString().split('T')[0],
             hoursWorked: hoursWorked,
@@ -371,70 +333,11 @@
         currentDate.setDate(currentDate.getDate() + 1);
       }
 
+      const projectedEndDate = timeline[timeline.length - 1]?.date || 'N/A';
       document.getElementById('total-word-count').textContent = totalWordCount.toFixed(2);
       document.getElementById('narration-time').textContent = courseDuration.toFixed(2);
       document.getElementById('development-time').textContent = developmentTime.toFixed(2);
-
-      if (ganttChart) {
-        ganttChart.destroy();
-      }
-
-      const ctx = document.getElementById('gantt-chart').getContext('2d');
-      const labels = timeline.map(entry => entry.date);
-      const hoursWorkedData = timeline.map(entry => entry.hoursWorked);
-      const capacityData = timeline.map(entry => entry.capacity);
-
-      ganttChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Projected Hours Worked',
-              data: hoursWorkedData,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1
-            },
-            {
-              label: 'Capacity (Max Hours Per Resource)',
-              data: capacityData,
-              backgroundColor: 'rgba(192, 75, 75, 0.6)',
-              borderColor: 'rgba(192, 75, 75, 1)',
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: true
-            },
-            title: {
-              display: true,
-              text: 'Development Timeline'
-            }
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Dates'
-              }
-            },
-            y: {
-              title: {
-                display: true,
-                text: 'Hours'
-              },
-              beginAtZero: true
-            }
-          }
-        }
-      });
-
-      document.getElementById('loading').style.display = 'none';
+      document.getElementById('projected-end-date').textContent = projectedEndDate;
     });
   </script>
 </body>
