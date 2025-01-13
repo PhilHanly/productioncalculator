@@ -323,8 +323,13 @@
       }
     });
 
+    // Chart variable
+    let ganttChart;
+
     // Event listener for calculating results
     document.getElementById('calculate-btn').addEventListener('click', function () {
+      document.getElementById('loading').style.display = 'block';
+
       const ratio = parseFloat(document.getElementById('ratio').value) || 0;
       const resources = parseFloat(document.getElementById('resources').value) || 1;
       const dailyHours = parseFloat(document.getElementById('daily-hours').value) || 6;
@@ -334,6 +339,7 @@
 
       if (!startDate) {
         alert('Please select a start date.');
+        document.getElementById('loading').style.display = 'none';
         return;
       }
 
@@ -353,7 +359,7 @@
 
       while (hoursRemaining > 0) {
         const dayOfWeek = currentDate.getDay();
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Skip weekends
           const hoursWorked = Math.min(resources * dailyHours, hoursRemaining);
           timeline.push({
             date: currentDate.toISOString().split('T')[0],
@@ -365,11 +371,71 @@
         currentDate.setDate(currentDate.getDate() + 1);
       }
 
-      const projectedEndDate = timeline[timeline.length - 1]?.date || 'N/A';
       document.getElementById('total-word-count').textContent = totalWordCount.toFixed(2);
       document.getElementById('narration-time').textContent = courseDuration.toFixed(2);
       document.getElementById('development-time').textContent = developmentTime.toFixed(2);
-      document.getElementById('projected-end-date').textContent = projectedEndDate;
+      document.getElementById('projected-end-date').textContent = timeline[timeline.length - 1]?.date || 'N/A';
+
+      if (ganttChart) {
+        ganttChart.destroy();
+      }
+
+      const ctx = document.getElementById('gantt-chart').getContext('2d');
+      const labels = timeline.map(entry => entry.date);
+      const hoursWorkedData = timeline.map(entry => entry.hoursWorked);
+      const capacityData = timeline.map(entry => entry.capacity);
+
+      ganttChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Projected Hours Worked',
+              data: hoursWorkedData,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Capacity (Max Hours Per Resource)',
+              data: capacityData,
+              backgroundColor: 'rgba(192, 75, 75, 0.6)',
+              borderColor: 'rgba(192, 75, 75, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true
+            },
+            title: {
+              display: true,
+              text: 'Development Timeline'
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Dates'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Hours'
+              },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      document.getElementById('loading').style.display = 'none';
     });
   </script>
 </body>
