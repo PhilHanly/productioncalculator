@@ -360,7 +360,7 @@
       while (hoursRemaining > 0) {
         const dayOfWeek = currentDate.getDay();
         if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Skip weekends
-          const hoursWorked = Math.min(resources * dailyHours, hoursRemaining);
+          const hoursWorked = Math.min(resources * dailyHours, hoursRemaining, maxDailyCapacity);
           timeline.push({
             date: currentDate.toISOString().split('T')[0],
             hoursWorked: hoursWorked,
